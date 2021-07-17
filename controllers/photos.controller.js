@@ -1,4 +1,5 @@
 const Photo = require('../models/photo.model');
+const Voter = require('../models/Voter.model');
 
 /****** SUBMIT PHOTO ********/
 exports.add = async (req, res) => {
@@ -7,7 +8,6 @@ exports.add = async (req, res) => {
     const file = req.files.file;
 
     if(title && author && email && file) { // if all fields are not empty
-      if (title.length > 25 || author.length > 50) throw new Error('Too many characters!')
 
       const fileName = file.path.split('/').slice(-1)[0]; // cut only filename from full path, e.g. C:/test/abc.jpg -> abc.jpg
       const fileExt = fileName.split('.').slice(-1)[0];
