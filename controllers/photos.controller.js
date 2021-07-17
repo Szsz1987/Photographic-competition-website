@@ -49,11 +49,23 @@ exports.vote = async (req, res) => {
     const photoToUpdate = await Photo.findOne({ _id: req.params.id });
     if(!photoToUpdate) res.status(404).json({ message: 'Not found' });
     else {
+      const voter = await Voter.findOne({ user: req.clientIp });
+      if (!voter) {
+        const newVoter = new Voter({ user: req.clientIp, votes: [ photoToUpdate._id ] });
+        await newVoter.save();
+      } else {
+        if (voter.votes.includes(photoToUpdate._id)) {
+          throw new Error('Vote duplicate!');
+        } else {
+          voter.votes.push(photoToUpdate._id);
+          await voter.save();
+        }
+      }
       photoToUpdate.votes++;
       photoToUpdate.save();
       res.send({ message: 'OK' });
     }
   } catch(err) {
-    res.status(500).json(err);
+    res.status(500).json(err.message);
   }
 };
